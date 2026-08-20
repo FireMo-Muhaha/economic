@@ -1,6 +1,9 @@
 # Environment variables (do not push real credentials)
 .env
 
+# Exclude backend
+backend/
+
 # Python cache
 __pycache__/
 *.py[cod]
