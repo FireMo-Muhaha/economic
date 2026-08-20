@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>แผนกคหกรรม | คิดครัว ปักฝัน</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chonburi&family=Taviraj:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<style>
+  :root{
+    --cream: #FBF3E6;
+    --cream-2: #F5E9D6;
+    --paper: #FFFDF8;
+    --ink: #2E2118;
+    --basil: #33513F;
+    --basil-deep: #223529;
+    --turmeric: #E2A63B;
+    --rose: #C1666B;
+    --line: rgba(46,33,24,0.18);
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--cream);
+    color:var(--ink);
+    font-family:'Taviraj', serif;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3, .display{
+    font-family:'Chonburi', cursive;
+    font-weight:400;
+    color:var(--basil-deep);
+    line-height:1.25;
+    margin:0;
+  }
+  .eyebrow{
+    font-family:'Kanit', sans-serif;
+    font-weight:600;
+    letter-spacing:.14em;
+    font-size:.75rem;
+    color:var(--rose);
+    text-transform:uppercase;
+  }
+  a{color:inherit;}
+  button{font-family:'Kanit', sans-serif;}
+  img,svg{display:block; max-width:100%;}
+  ::selection{background:var(--turmeric); color:var(--basil-deep);}
+
+  a:focus-visible, button:focus-visible{
+    outline:3px solid var(--rose);
+    outline-offset:3px;
+    border-radius:4px;
+  }
+
+  .wrap{max-width:1180px; margin:0 auto; padding:0 6vw;}
+
+  /* ---------- NAV ---------- */
+  nav{
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:1.1rem 6vw;
+    background:rgba(251,243,230,0.82);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .logo{
+    font-family:'Chonburi', cursive;
+    font-size:1.35rem;
+    color:var(--basil-deep);
+    display:flex; align-items:center; gap:.55rem;
+  }
+  .logo-mark{width:30px; height:30px; flex-shrink:0;}
+  .navlinks{
+    display:flex; gap:2.1rem;
+    font-family:'Kanit', sans-serif;
+    font-size:.92rem;
+    font-weight:500;
+    list-style:none; margin:0; padding:0;
+  }
+  .navlinks a{
+    text-decoration:none; position:relative; padding-bottom:4px;
+  }
+  .navlinks a::after{
+    content:''; position:absolute; left:0; bottom:0; height:2px; width:0;
+    background:var(--rose); transition:width .3s ease;
+  }
+  .navlinks a:hover::after{width:100%;}
+  .navcta{
+    background:var(--basil-deep); color:var(--cream);
+    padding:.55rem 1.3rem; border-radius:100px; border:none;
+    font-size:.85rem; font-weight:500; cursor:pointer;
+    transition:transform .25s ease, background .25s ease;
+  }
+  .navcta:hover{transform:translateY(-2px); background:var(--rose);}
+  @media(max-width:800px){ .navlinks{display:none;} }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    min-height:100svh;
+    display:flex; align-items:center;
+    padding:7.5rem 6vw 4rem;
+    position:relative;
+    perspective:1400px;
+    overflow:hidden;
+  }
+  .hero-grid{
+    width:100%; max-width:1180px; margin:0 auto;
+    display:grid; grid-template-columns:1.05fr .95fr; gap:2rem; align-items:center;
+  }
+  .hero-copy .eyebrow{margin-bottom:1rem; display:inline-block;}
+  .hero h1{
+    font-size:clamp(2.4rem, 5vw, 3.9rem);
+    letter-spacing:.01em;
+  }
+  .hero h1 span{color:var(--rose);}
+  .hero p{
+    margin-top:1.4rem; font-size:1.12rem; max-width:32rem;
+    color:#4a392c; font-weight:300;
+  }
+  .hero-ctas{margin-top:2.3rem; display:flex; gap:1rem; flex-wrap:wrap; align-items:center;}
+  .btn-primary{
+    background:var(--basil-deep); color:var(--cream);
+    padding:.95rem 1.9rem; border-radius:100px; border:none;
+    font-weight:500; font-size:.95rem; cursor:pointer;
+    box-shadow:0 10px 22px -8px rgba(34,53,41,0.55);
+    transition:transform .25s ease, box-shadow .25s ease;
+    text-decoration:none; display:inline-block;
+  }
+  .btn-primary:hover{transform:translateY(-3px); box-shadow:0 16px 26px -8px rgba(34,53,41,0.6);}
+  .btn-ghost{
+    font-family:'Kanit', sans-serif; font-size:.9rem; font-weight:500;
+    color:var(--basil-deep); text-decoration:none;
+    display:flex; align-items:center; gap:.4rem;
+    border-bottom:1.5px dashed var(--rose); padding-bottom:2px;
+  }
+
+  /* floating shelf scene */
+  .scene{
+    position:relative; height:460px; transform-style:preserve-3d;
+  }
+  .shelf-plank{
+    position:absolute; left:2%; right:2%; bottom:18%; height:16px;
+    background:linear-gradient(180deg, #C79A5B, #A97D42);
+    border-radius:4px;
+    box-shadow:0 20px 30px -12px rgba(46,33,24,0.4);
+    transform:translateZ(-40px) rotateX(2deg);
+  }
+  .float-obj{
+    position:absolute; transform-style:preserve-3d;
+    will-change:transform;
+    transition:transform .12s ease-out;
+  }
+  .float-obj svg{filter:drop-shadow(0 14px 16px rgba(46,33,24,0.22));}
+
+  .obj-pot{ width:190px; top:6%; left:4%; }
+  .obj-needle{ width:150px; top:0%; right:2%; }
+  .obj-hoop{ width:170px; bottom:20%; right:14%; }
+  .obj-scissors{ width:110px; bottom:6%; left:20%; }
+
+  /* steam */
+  .steam path{
+    stroke-dasharray:10 10;
+    animation:steamrise 3s linear infinite;
+    opacity:.75;
+  }
+  .steam path:nth-child(2){animation-delay:.5s;}
+  .steam path:nth-child(3){animation-delay:1s;}
+  @keyframes steamrise{
+    0%{ stroke-dashoffset:20; opacity:0; transform:translateY(6px);}
+    30%{opacity:.85;}
+    100%{ stroke-dashoffset:0; opacity:0; transform:translateY(-16px);}
+  }
+
+  /* needle thread stitch */
+  .thread-path{
+    stroke-dasharray:6 7;
+    animation:stitchmove 1.6s linear infinite;
+  }
+  @keyframes stitchmove{ to{ stroke-dashoffset:-26; } }
+  .needle-body{
+    animation:needlebob 2.6s ease-in-out infinite;
+    transform-origin:50% 20%;
+  }
+  @keyframes needlebob{
+    0%,100%{ transform:rotate(-8deg) translateY(0); }
+    50%{ transform:rotate(4deg) translateY(6px); }
+  }
+
+  /* hoop flower */
+  .petal{
+    animation:bloom 3.4s ease-in-out infinite;
+    transform-origin:center;
+  }
+  .petal:nth-child(2){animation-delay:.2s;}
+  .petal:nth-child(3){animation-delay:.4s;}
+  .petal:nth-child(4){animation-delay:.6s;}
+  .petal:nth-child(5){animation-delay:.8s;}
+  @keyframes bloom{
+    0%,100%{ transform:scale(.92); }
+    50%{ transform:scale(1.06); }
+  }
+  .hoop-ring{ animation:sway 5s ease-in-out infinite; transform-origin:top center;}
+  @keyframes sway{
+    0%,100%{ transform:rotate(-3deg); }
+    50%{ transform:rotate(3deg); }
+  }
+
+  /* scissors */
+  .blade-a{ animation:snip 2.2s ease-in-out infinite; transform-origin:32px 32px; }
+  .blade-b{ animation:snip2 2.2s ease-in-out infinite; transform-origin:32px 32px; }
+  @keyframes snip{ 0%,100%{transform:rotate(0deg);} 50%{transform:rotate(-14deg);} }
+  @keyframes snip2{ 0%,100%{transform:rotate(0deg);} 50%{transform:rotate(14deg);} }
+
+  .scroll-cue{
+    position:absolute; bottom:2.2rem; left:50%; transform:translateX(-50%);
+    font-family:'Kanit', sans-serif; font-size:.78rem; color:#6b5949;
+    display:flex; flex-direction:column; align-items:center; gap:.5rem;
+    opacity:.8;
+  }
+  .scroll-cue .dot{
+    width:5px; height:5px; border-radius:50%; background:var(--rose);
+    animation:dotdrop 1.6s ease-in-out infinite;
+  }
+  @keyframes dotdrop{ 0%{transform:translateY(0); opacity:1;} 100%{transform:translateY(14px); opacity:0;} }
+
+  @media(max-width:900px){
+    .hero-grid{grid-template-columns:1fr;}
+    .scene{height:320px; margin-top:1rem;}
+    .obj-pot{width:130px;} .obj-needle{width:110px;} .obj-hoop{width:120px;} .obj-scissors{width:80px;}
+  }
+
+  /* ---------- SECTION SHARED ---------- */
+  section{padding:6.5rem 0;}
+  .section-head{max-width:640px; margin-bottom:3.5rem;}
+  .section-head h2{font-size:clamp(1.8rem,3.4vw,2.6rem); margin-top:.6rem;}
+  .section-head p{margin-top:1rem; color:#4a392c; font-weight:300; font-size:1.05rem;}
+
+  /* ---------- INTRO ---------- */
+  .intro{background:var(--paper); border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
+  .intro-grid{display:grid; grid-template-columns:1fr 1fr; gap:3.5rem; align-items:center;}
+  .intro-text p{color:#4a392c; font-size:1.05rem; font-weight:300; line-height:1.85;}
+  .icon-strip{display:flex; gap:1.6rem; margin-top:2rem; flex-wrap:wrap;}
+  .icon-strip .chip{
+    display:flex; align-items:center; gap:.6rem;
+    font-family:'Kanit', sans-serif; font-size:.85rem; font-weight:500;
+    background:var(--cream-2); padding:.6rem 1rem; border-radius:100px;
+  }
+  .icon-strip .chip .dot2{width:8px; height:8px; border-radius:50%; background:var(--basil);}
+  .intro-visual{position:relative; height:340px;}
+  .fabric-wave{
+    position:absolute; inset:0; border-radius:28px;
+    background:linear-gradient(135deg, var(--turmeric), var(--rose));
+    overflow:hidden;
+  }
+  .fabric-wave svg{position:absolute; bottom:-2px; width:100%; height:60%;}
+  .fabric-wave .stitchline{
+    position:absolute; top:14%; left:8%; right:8%; height:1px;
+    background:repeating-linear-gradient(90deg, rgba(255,255,255,.85) 0 8px, transparent 8px 16px);
+    animation:threadslide 3s linear infinite;
+  }
+  @keyframes threadslide{ to{ background-position-x:24px; } }
+  @media(max-width:900px){ .intro-grid{grid-template-columns:1fr;} }
+
+  /* ---------- TRACKS (3D flip cards) ---------- */
+  .tracks-grid{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:1.6rem;
+  }
+  .flip-card{
+    height:340px; perspective:1200px;
+  }
+  .flip-inner{
+    position:relative; width:100%; height:100%;
+    transform-style:preserve-3d;
+    transition:transform .7s cubic-bezier(.2,.8,.2,1);
+  }
+  .flip-card:hover .flip-inner, .flip-card:focus-within .flip-inner{ transform:rotateY(180deg); }
+  .flip-face{
+    position:absolute; inset:0; backface-visibility:hidden;
+    border-radius:20px; padding:1.8rem;
+    display:flex; flex-direction:column; justify-content:flex-end;
+    border:1px solid var(--line);
+  }
+  .flip-front{ background:var(--paper); }
+  .flip-front .num{ font-family:'Kanit',sans-serif; color:var(--rose); font-weight:600; font-size:.85rem;}
+  .flip-front h3{ font-size:1.25rem; margin-top:.4rem;}
+  .flip-front .track-icon{ margin-bottom:auto; }
+  .flip-back{
+    background:var(--basil-deep); color:var(--cream);
+    transform:rotateY(180deg);
+    justify-content:center;
+  }
+  .flip-back p{font-size:.95rem; font-weight:300; line-height:1.75;}
+  .flip-back .eyebrow{color:var(--turmeric);}
+  @media(max-width:1000px){ .tracks-grid{grid-template-columns:1fr 1fr;} }
+  @media(max-width:560px){ .tracks-grid{grid-template-columns:1fr;} }
+
+  /* ---------- GALLERY ---------- */
+  .gallery{background:var(--cream-2);}
+  .gallery-grid{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem;
+  }
+  .gallery-grid .g-item:nth-child(4n+1){ grid-row: span 2; }
+  .g-item{
+    position:relative; border-radius:18px; overflow:hidden; min-height:220px;
+    display:flex; align-items:flex-end; padding:1.3rem;
+    transform:rotate(0deg) translateY(0);
+    transition:transform .35s ease, box-shadow .35s ease;
+    border:1px solid var(--line);
+  }
+  .g-item:hover{ transform:translateY(-6px) rotate(-.6deg); box-shadow:0 22px 30px -16px rgba(46,33,24,.35); }
+  .g-item .tag{
+    font-family:'Kanit', sans-serif; font-weight:500; font-size:clamp(.76rem, 1vw, .85rem);
+    color:#fff; background:rgba(34,53,41,.75); padding:.45rem .85rem; border-radius:100px;
+    backdrop-filter:blur(6px); border:1px solid rgba(255,255,255,.2);
+    box-shadow:0 8px 16px rgba(0,0,0,.2);
+    white-space:nowrap; max-width:calc(100% - 1.6rem);
+    overflow:hidden; text-overflow:ellipsis;
+    display:inline-flex; align-items:center; gap:.3rem;
+  }
+  .g-img-item{
+    padding:0; min-height:250px; position:relative; background:#223529;
+  }
+  .g-img-item .g-img{
+    width:100%; height:100%; object-fit:cover; position:absolute; inset:0;
+    transition: transform .6s cubic-bezier(.2,.8,.2,1);
+  }
+  .g-img-item:hover .g-img{
+    transform: scale(1.08);
+  }
+  .g-img-item::after{
+    content:''; position:absolute; inset:0;
+    background: linear-gradient(180deg, rgba(34,53,41,0.05) 30%, rgba(34,53,41,0.85) 100%);
+    pointer-events:none;
+  }
+  .g-img-item .tag{
+    position:relative; z-index:2; margin:.9rem;
+  }
+  .g-1{ background:radial-gradient(120% 100% at 20% 0%, #E9BE72, #C1666B); }
+  .g-2{ background:radial-gradient(120% 100% at 80% 0%, #7C9885, #33513F); }
+  .g-3{ background:radial-gradient(120% 100% at 30% 100%, #E2A63B, #A9673A); }
+  .g-4{ background:radial-gradient(120% 100% at 70% 100%, #C1666B, #6E3944); }
+  .g-5{ background:radial-gradient(120% 100% at 40% 20%, #8FAF9A, #33513F); }
+  @media(max-width:900px){ .gallery-grid{grid-template-columns:1fr 1fr;} .gallery-grid .g-item:nth-child(4n+1){grid-row:auto;} }
+  @media(max-width:560px){ .gallery-grid{grid-template-columns:1fr;} }
+
+  /* ---------- STATS ---------- */
+  .stats-grid{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:2rem;
+    border-top:1px solid var(--line); padding-top:3rem;
+  }
+  .stat .num{
+    font-family:'Chonburi', cursive; font-size:clamp(2.2rem,4vw,3.1rem); color:var(--rose);
+  }
+  .stat .lbl{font-family:'Kanit',sans-serif; font-size:.88rem; color:#4a392c; margin-top:.4rem;}
+  @media(max-width:800px){ .stats-grid{grid-template-columns:1fr 1fr; row-gap:2.4rem;} }
+
+  /* ---------- NEWS BOARD ---------- */
+  .news-section{ background:var(--paper); padding:5rem 0; }
+  .news-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:1.5rem;
+    margin-top:2.5rem;
+  }
+  .news-card{
+    background:var(--cream);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:1.6rem 1.8rem 1.4rem;
+    display:flex; flex-direction:column; gap:.7rem;
+    position:relative; overflow:hidden;
+    transition:transform .3s ease, box-shadow .3s ease;
+    cursor:default;
+  }
+  .news-card::before{
+    content:'';
+    position:absolute; top:0; left:0; right:0; height:3px;
+    background:linear-gradient(90deg, var(--basil), var(--turmeric));
+    opacity:0;
+    transition:opacity .3s ease;
+  }
+  .news-card:hover{ transform:translateY(-5px); box-shadow:0 18px 32px -12px rgba(46,33,24,.18); }
+  .news-card:hover::before{ opacity:1; }
+  .news-card.pinned{
+    border-color:rgba(226,166,59,.45);
+    background:linear-gradient(135deg,#FFFDF8,#FBF3E6);
+  }
+  .news-card.pinned::before{ opacity:1; background:linear-gradient(90deg,var(--turmeric),var(--rose)); }
+  .news-pin{
+    position:absolute; top:1rem; right:1rem;
+    font-family:'Kanit',sans-serif; font-size:.68rem; font-weight:700;
+    background:var(--turmeric); color:var(--basil-deep);
+    padding:.2rem .7rem; border-radius:100px; letter-spacing:.05em;
+  }
+  .news-cat{
+    font-family:'Kanit',sans-serif; font-size:.72rem; font-weight:600;
+    letter-spacing:.08em; text-transform:uppercase;
+    color:var(--rose);
+  }
+  .news-title{
+    font-family:'Kanit',sans-serif; font-size:1rem; font-weight:600;
+    color:var(--basil-deep); line-height:1.4;
+    margin:0;
+  }
+  .news-body{
+    font-size:.9rem; color:#6b5949; font-weight:300;
+    line-height:1.7;
+    display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical;
+    overflow:hidden;
+  }
+  .news-date{
+    font-family:'Kanit',sans-serif; font-size:.75rem; color:#9a8070;
+    margin-top:auto; padding-top:.6rem;
+    border-top:1px solid var(--line);
+  }
+  .news-empty{
+    grid-column:1/-1; text-align:center; padding:3rem;
+    font-family:'Kanit',sans-serif; color:#9a8070;
+  }
+  @media(max-width:900px){ .news-grid{grid-template-columns:1fr 1fr;} }
+  @media(max-width:560px){ .news-grid{grid-template-columns:1fr;} }
+
+  /* ---------- CTA / FOOTER ---------- */
+  footer{
+    background:var(--basil-deep); color:var(--cream);
+    padding:6rem 0 2rem; position:relative; overflow:hidden;
+  }
+  .footer-cta{ text-align:center; max-width:640px; margin:0 auto 4rem; }
+  .footer-cta h2{ color:var(--cream); font-size:clamp(1.9rem,4vw,2.7rem); }
+  .footer-cta p{ color:#D9CBB8; margin-top:1rem; font-weight:300; }
+  .footer-cta .btn-primary{ margin-top:1.8rem; background:var(--turmeric); color:var(--basil-deep); box-shadow:0 10px 22px -8px rgba(226,166,59,.5); }
+
+  .stitch-rail{ position:relative; height:60px; margin:0 6vw 3rem; }
+  .stitch-rail svg{ width:100%; height:100%; overflow:visible; }
+  .rail-dash{ stroke-dasharray:2 14; stroke-linecap:round; }
+  .rail-needle{ offset-path:path('M0,30 C 300,-10 600,70 1180,30'); animation:railmove 6s linear infinite; }
+  @keyframes railmove{ to{ offset-distance:100%; } }
+
+  .footer-grid{
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:2rem;
+    padding-top:2rem; border-top:1px solid rgba(251,243,230,.15);
+    font-family:'Kanit', sans-serif; font-size:.85rem; color:#c9bca9;
+  }
+  .footer-logo{ font-family:'Chonburi', cursive; font-size:1.2rem; color:var(--cream); margin-bottom:.6rem;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; }
+    .rail-needle{ offset-distance:0%; }
+  }
+
+  /* ---------- 3D HERO CANVAS ---------- */
+  #hero-3d{
+    position:absolute; inset:0; width:100%; height:100%;
+    pointer-events:none; z-index:0; display:block;
+  }
+  .hero-grid{ position:relative; z-index:1; }
+  .scroll-cue{ z-index:2; }
+
+  /* 3D depth shadow on hero headline */
+  .hero h1{
+    text-shadow:
+      1px 2px 0 rgba(34,53,41,.07),
+      4px 6px 12px rgba(34,53,41,.10);
+  }
+
+  /* Preserve transform for tilt cards */
+  .g-item, .stat{ will-change:transform; }
+
+  /* 3D perspective on intro visual */
+  .fabric-wave{
+    transition: transform .6s cubic-bezier(.2,.8,.2,1);
+    transform: perspective(700px) rotateY(-5deg) rotateX(2deg) scale(1.01);
+  }
+  .intro-visual:hover .fabric-wave{
+    transform: perspective(700px) rotateY(5deg) rotateX(-2deg) scale(1.03);
+  }
+
+  /* 3D lift on flip cards (extra layer on top of flip) */
+  .flip-card{
+    transition: transform .35s ease, box-shadow .35s ease;
+  }
+  .flip-card:hover{
+    box-shadow: 0 28px 42px -14px rgba(46,33,24,.3);
+    transform: translateY(-6px);
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">
+    <svg class="logo-mark" viewBox="0 0 32 32" fill="none">
+      <circle cx="16" cy="16" r="15" stroke="#33513F" stroke-width="2"/>
+      <path d="M10 20c0-4 2.5-6 6-6s6 2 6 6" stroke="#C1666B" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="16" cy="11" r="2" fill="#E2A63B"/>
+    </svg>
+    แผนกคหกรรม
+  </div>
+  <ul class="navlinks">
+    <li><a href="#intro">เกี่ยวกับแผนก</a></li>
+    <li><a href="#tracks">สาขาที่เรียน</a></li>
+    <li><a href="#gallery">กิจกรรม</a></li>
+    <li><a href="#news">ข่าวสาร</a></li>
+    <li><a href="#contact">ติดต่อ</a></li>
+  </ul>
+  <button class="navcta">สมัครเรียน</button>
+</nav>
+
+<!-- ================= HERO ================= -->
+<section class="hero" id="hero">
+  <canvas id="hero-3d" aria-hidden="true"></canvas>
+  <div class="hero-grid">
+    <div class="hero-copy">
+      <span class="eyebrow">แผนกคหกรรม · House of Craft</span>
+      <h1>เรียนรู้ครัว เข็ม<br>และหัวใจ<span>.</span></h1>
+      <p>พื้นที่ที่เปลี่ยนทุกไอเดียให้กลายเป็นอาหารอร่อย งานปักฝีมือ ดอกไม้จัดวางอย่างประณีต และบ้านที่อบอุ่น — ผ่านการลงมือทำจริงทุกวัน</p>
+      <div class="hero-ctas">
+        <a href="#tracks" class="btn-primary">ดูสาขาที่เปิดสอน</a>
+        <a href="#gallery" class="btn-ghost">ชมผลงานนักเรียน →</a>
+      </div>
+    </div>
+
+    <div class="scene" id="scene">
+      <div class="shelf-plank"></div>
+
+      <div class="float-obj obj-pot" data-depth="30">
+        <svg viewBox="0 0 140 130" fill="none">
+          <g class="steam">
+            <path d="M45 40 Q40 25 50 15" stroke="#8a7360" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <path d="M65 40 Q60 22 70 10" stroke="#8a7360" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <path d="M85 40 Q80 25 90 15" stroke="#8a7360" stroke-width="3" fill="none" stroke-linecap="round"/>
+          </g>
+          <path d="M20 55 h100 l-10 55a10 10 0 01-10 8H40a10 10 0 01-10-8Z" fill="#33513F"/>
+          <rect x="14" y="48" width="112" height="14" rx="7" fill="#223529"/>
+          <path d="M8 55 q-14 2 -10 16" stroke="#223529" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <path d="M132 55 q14 2 10 16" stroke="#223529" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <ellipse cx="70" cy="55" rx="10" ry="4" fill="#E2A63B"/>
+        </svg>
+      </div>
+
+      <div class="float-obj obj-needle" data-depth="55">
+        <svg viewBox="0 0 150 140" fill="none">
+          <path class="thread-path" d="M10 120 Q45 60 90 90 Q120 108 140 60" stroke="#C1666B" stroke-width="2.5" fill="none"/>
+          <g class="needle-body">
+            <line x1="90" y1="10" x2="130" y2="80" stroke="#8a8f94" stroke-width="4" stroke-linecap="round"/>
+            <circle cx="92" cy="14" r="4" fill="none" stroke="#8a8f94" stroke-width="3"/>
+          </g>
+        </svg>
+      </div>
+
+      <div class="float-obj obj-hoop" data-depth="40">
+        <svg viewBox="0 0 160 160" fill="none">
+          <g class="hoop-ring">
+            <circle cx="80" cy="80" r="60" stroke="#A9673A" stroke-width="8" fill="#FBF3E6"/>
+            <circle cx="80" cy="80" r="60" stroke="#C79A5B" stroke-width="3" fill="none"/>
+          </g>
+          <g transform="translate(80,80)">
+            <ellipse class="petal" cx="0" cy="-26" rx="12" ry="20" fill="#C1666B"/>
+            <ellipse class="petal" cx="0" cy="-26" rx="12" ry="20" fill="#C1666B" transform="rotate(72)"/>
+            <ellipse class="petal" cx="0" cy="-26" rx="12" ry="20" fill="#D98A8E" transform="rotate(144)"/>
+            <ellipse class="petal" cx="0" cy="-26" rx="12" ry="20" fill="#C1666B" transform="rotate(216)"/>
+            <ellipse class="petal" cx="0" cy="-26" rx="12" ry="20" fill="#D98A8E" transform="rotate(288)"/>
+            <circle r="10" fill="#E2A63B"/>
+          </g>
+        </svg>
+      </div>
+
+      <div class="float-obj obj-scissors" data-depth="70">
+        <svg viewBox="0 0 64 64" fill="none">
+          <g class="blade-a">
+            <path d="M32 32 L58 8" stroke="#8a8f94" stroke-width="4" stroke-linecap="round"/>
+            <circle cx="14" cy="46" r="9" stroke="#33513F" stroke-width="4" fill="none"/>
+          </g>
+          <g class="blade-b">
+            <path d="M32 32 L58 56" stroke="#8a8f94" stroke-width="4" stroke-linecap="round"/>
+            <circle cx="14" cy="18" r="9" stroke="#C1666B" stroke-width="4" fill="none"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="scroll-cue">เลื่อนดูชั้นวางไอเดีย<div class="dot"></div></div>
+</section>
+
+<!-- ================= INTRO ================= -->
+<section class="intro" id="intro">
+  <div class="wrap intro-grid">
+    <div class="intro-text">
+      <span class="eyebrow">เกี่ยวกับแผนก</span>
+      <h2>ห้องเรียนที่มีกลิ่นอาหาร เสียงจักร และรอยยิ้ม</h2>
+      <p>แผนกคหกรรมสอนให้นักเรียนลงมือทำจริง ตั้งแต่หั่น ผัด ปัก จนถึงจัดดอกไม้และดูแลบ้าน โดยผสานความรู้ทางวิทยาศาสตร์อาหาร ศิลปะการออกแบบ และการจัดการ เข้ากับความอดทนและความประณีตที่ฝึกฝนได้ในทุกคาบเรียน</p>
+      <div class="icon-strip">
+        <span class="chip"><span class="dot2"></span>ลงมือทำจริงทุกสัปดาห์</span>
+        <span class="chip"><span class="dot2"></span>ครูผู้เชี่ยวชาญเฉพาะทาง</span>
+        <span class="chip"><span class="dot2"></span>ต่อยอดสู่อาชีพได้จริง</span>
+      </div>
+    </div>
+    <div class="intro-visual">
+      <div class="fabric-wave" style="position:relative; height:100%; border-radius:28px; overflow:hidden; border:2px solid var(--cream-2); box-shadow:0 20px 40px -15px rgba(46,33,24,0.4);">
+        <img src="images/123.png" alt="การปฏิบัติการทำอาหารในห้องครัวคหกรรม" style="width:100%; height:100%; object-fit:cover; display:block;">
+        <div style="position:absolute; inset:0; background:linear-gradient(180deg, transparent 40%, rgba(34,53,41,0.85) 100%);"></div>
+        <div class="stitchline" style="top:12px;"></div>
+        <div style="position:absolute; bottom:1.2rem; left:1.2rem; right:1.2rem; z-index:3; display:flex; align-items:center; justify-content:space-between;">
+          <span class="chip" style="background:rgba(251,243,230,0.92); backdrop-filter:blur(8px); color:var(--basil-deep); font-weight:600; box-shadow:0 4px 12px rgba(0,0,0,0.15);">
+            <span class="dot2" style="background:var(--rose);"></span>บรรยากาศการเรียนสาธิตการทำอาหารจริง
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TRACKS ================= -->
+<section id="tracks">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">สาขาที่เรียน</span>
+      <h2>สี่เส้นทาง หนึ่งความตั้งใจ</h2>
+      <p>เลือกเส้นทางที่ใช่ แล้วฝึกฝนอย่างจริงจัง — ชี้เมาส์ หรือแตะการ์ด เพื่อดูรายละเอียดของแต่ละสาขา</p>
+    </div>
+    <div class="tracks-grid">
+
+      <div class="flip-card" tabindex="0">
+        <div class="flip-inner">
+          <div class="flip-face flip-front">
+            <div class="track-icon">
+              <svg width="52" height="52" viewBox="0 0 52 52" fill="none"><circle cx="26" cy="26" r="24" fill="#F5E9D6"/><path d="M14 22h24l-3 18a4 4 0 01-4 3H21a4 4 0 01-4-3z" fill="#33513F"/><rect x="12" y="18" width="28" height="6" rx="3" fill="#223529"/></svg>
+            </div>
+            <span class="num">01</span>
+            <h3>อาหารและโภชนาการ</h3>
+          </div>
+          <div class="flip-face flip-back">
+            <span class="eyebrow">Food &amp; Nutrition</span>
+            <p>ฝึกปรุงอาหารไทยและนานาชาติ ถนอมอาหาร และวางแผนโภชนาการเพื่อสุขภาพที่ดี</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-card" tabindex="0">
+        <div class="flip-inner">
+          <div class="flip-face flip-front">
+            <div class="track-icon">
+              <svg width="52" height="52" viewBox="0 0 52 52" fill="none"><circle cx="26" cy="26" r="24" fill="#F5E9D6"/><path d="M14 38 Q22 18 38 14" stroke="#C1666B" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="38" cy="14" r="3" fill="#8a8f94"/></svg>
+            </div>
+            <span class="num">02</span>
+            <h3>ผ้าและเครื่องแต่งกาย</h3>
+          </div>
+          <div class="flip-face flip-back">
+            <span class="eyebrow">Textile &amp; Fashion</span>
+            <p>เรียนตัดเย็บ ออกแบบลาย ปักผ้า และสร้างสรรค์เครื่องแต่งกายตั้งแต่แบบร่างจนถึงตัวจริง</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-card" tabindex="0">
+        <div class="flip-inner">
+          <div class="flip-face flip-front">
+            <div class="track-icon">
+              <svg width="52" height="52" viewBox="0 0 52 52" fill="none"><circle cx="26" cy="26" r="24" fill="#F5E9D6"/><circle cx="26" cy="26" r="7" fill="#E2A63B"/><ellipse cx="26" cy="14" rx="6" ry="9" fill="#C1666B"/><ellipse cx="26" cy="38" rx="6" ry="9" fill="#C1666B"/><ellipse cx="14" cy="26" rx="9" ry="6" fill="#D98A8E"/><ellipse cx="38" cy="26" rx="9" ry="6" fill="#D98A8E"/></svg>
+            </div>
+            <span class="num">03</span>
+            <h3>งานประดิษฐ์และดอกไม้</h3>
+          </div>
+          <div class="flip-face flip-back">
+            <span class="eyebrow">Crafts &amp; Floral Design</span>
+            <p>ฝึกจัดดอกไม้ งานฝีมือ และประดิษฐ์ของใช้จากวัสดุเหลือใช้อย่างสร้างสรรค์</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-card" tabindex="0">
+        <div class="flip-inner">
+          <div class="flip-face flip-front">
+            <div class="track-icon">
+              <svg width="52" height="52" viewBox="0 0 52 52" fill="none"><circle cx="26" cy="26" r="24" fill="#F5E9D6"/><path d="M26 12 L42 26 V40 H10 V26 Z" fill="#33513F"/><path d="M20 40 V30 H32 V40" fill="#F5E9D6"/></svg>
+            </div>
+            <span class="num">04</span>
+            <h3>การจัดการบ้านและครอบครัว</h3>
+          </div>
+          <div class="flip-face flip-back">
+            <span class="eyebrow">Home &amp; Family Management</span>
+            <p>เรียนรู้การดูแลบ้าน จัดการงบประมาณครัวเรือน และความเข้าใจด้านครอบครัว</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ================= GALLERY ================= -->
+<section class="gallery" id="gallery">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">กิจกรรมเด่น</span>
+      <h2>ทุกผลงาน เริ่มจากมือของนักเรียน</h2>
+      <p>ภาพบรรยากาศการเรียนการสอนจริงและการฝึกปฏิบัติตามมาตรฐานวิชาชีพ</p>
+    </div>
+    <div class="gallery-grid">
+      <div class="g-item g-img-item">
+        <img src="images/123.png" alt="การเรียนการสอนและสาธิตการทำอาหาร" class="g-img">
+        <span class="tag">🍳 ครัวเปิดสอนรายสัปดาห์ &amp; สื่อ</span>
+      </div>
+      <div class="g-item g-img-item">
+        <img src="images/213.png" alt="การบรรจุและเตรียมขนมไทย" class="g-img">
+        <span class="tag">🥧 การแปรรูป &amp; บรรจุภัณฑ์ขนมไทย</span>
+      </div>
+      <div class="g-item g-img-item">
+        <img src="images/111.png" alt="การฝึกปฏิบัติงานโภชนาการและการประกอบอาหาร" class="g-img">
+        <span class="tag">👩‍🍳 การฝึกปฏิบัติงานโภชนาการ</span>
+      </div>
+      <div class="g-item g-img-item">
+        <img src="images/222.png" alt="การจัดเตรียมและการควบคุมคุณภาพอาหาร" class="g-img">
+        <span class="tag">🍱 การจัดเตรียม &amp; คุมคุณภาพอาหาร</span>
+      </div>
+      <div class="g-item g-img-item">
+        <img src="images/231.png" alt="การสร้างสรรค์เมนูและการทำงานทีม" class="g-img">
+        <span class="tag">💡 การสร้างสรรค์เมนู &amp; ทำงานทีม</span>
+      </div>
+      <div class="g-item g-img-item">
+        <img src="images/f321.png" alt="ศิลปะการจัดดอกไม้และการประดิษฐ์งานฝีมือ" class="g-img">
+        <span class="tag">💐 ศิลปะการจัดดอกไม้ &amp; งานประดิษฐ์</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= STATS ================= -->
+<section id="stats">
+  <div class="wrap">
+    <div class="stats-grid">
+      <div class="stat"><div class="num" data-target="500">0</div><div class="lbl">นักเรียนปัจจุบัน</div></div>
+      <div class="stat"><div class="num" data-target="25">0</div><div class="lbl">ปีที่ก่อตั้งแผนก</div></div>
+      <div class="stat"><div class="num" data-target="30">0</div><div class="lbl">รางวัลที่ได้รับ</div></div>
+      <div class="stat"><div class="num" data-target="95">0</div><div class="lbl">% มีงาน/เรียนต่อ</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= NEWS BOARD ================= -->
+<section class="news-section" id="news">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">ข่าวสาร & กิจกรรม</span>
+      <h2>กระดานแจ้งข่าวแผนก</h2>
+      <p>ติดตามประกาศสำคัญ กิจกรรม และความสำเร็จของนักเรียนแผนกคหกรรม</p>
+    </div>
+    <div class="news-grid" id="news-grid">
+      <!-- Cards rendered by JS -->
+      <div class="news-empty">⏳ กำลังโหลดข่าวสาร…</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer id="contact">
+  <div class="footer-cta wrap">
+    <span class="eyebrow">พร้อมหรือยัง</span>
+    <h2>มาเย็บฝันของคุณไปกับเรา</h2>
+    <p>สมัครเรียนแผนกคหกรรม แล้วเริ่มลงมือทำในสิ่งที่คุณรักตั้งแต่วันแรก</p>
+    <a href="#" class="btn-primary">สมัครเรียนเลย</a>
+  </div>
+
+  <div class="stitch-rail">
+    <svg viewBox="0 0 1180 60" preserveAspectRatio="none">
+      <path class="rail-dash" d="M0,30 C 300,-10 600,70 1180,30" stroke="#D9CBB8" stroke-width="2" fill="none"/>
+      <circle class="rail-needle" r="5" fill="#E2A63B"/>
+    </svg>
+  </div>
+
+  <div class="wrap footer-grid">
+    <div>
+      <div class="footer-logo">แผนกคหกรรม</div>
+      <div>คิดครัว ปักฝัน · House of Craft</div>
+    </div>
+    <div>โทร. 000-000-0000<br>อีเมล contact@example.ac.th</div>
+    <div>ถนนตัวอย่าง แขวงตัวอย่าง<br>กรุงเทพมหานคร</div>
+  </div>
+</footer>
+
+<script>
+  /* ====== CONTENT HYDRATION FROM API & EDITOR ====== */
+  (function() {
+    function applyContent(s) {
+      if (!s || typeof s !== 'object' || !Object.keys(s).length) return;
+
+      function setText(sel, val) {
+        const el = document.querySelector(sel);
+        if (el && val !== undefined && val !== '') el.textContent = val;
+      }
+      function setAttr(sel, attr, val) {
+        const el = document.querySelector(sel);
+        if (el && val !== undefined && val !== '') el.setAttribute(attr, val);
+      }
+
+      // Nav brand (keep SVG icon, replace text only)
+      if (s['nav-brand']) {
+        const logo = document.querySelector('nav .logo');
+        if (logo) {
+          const svg = logo.querySelector('svg.logo-mark');
+          logo.textContent = s['nav-brand'];
+          if (svg) logo.insertBefore(svg, logo.firstChild);
+        }
+      }
+      if (s['nav-cta-btn']) setText('nav .navcta', s['nav-cta-btn']);
+
+      // Nav links
+      if (s['nav_links'] && Array.isArray(s['nav_links'])) {
+        var lis = document.querySelectorAll('nav .navlinks li a');
+        s['nav_links'].forEach(function(l, i) {
+          if (lis[i]) { if(l.text) lis[i].textContent = l.text; if(l.href) lis[i].href = l.href; }
+        });
+      }
+
+      // Hero
+      if (s['hero-eyebrow']) setText('.hero-copy .eyebrow', s['hero-eyebrow']);
+      if (s['hero-h1']) {
+        const h1 = document.querySelector('.hero h1');
+        if (h1) {
+          const parts = String(s['hero-h1']).split('|');
+          h1.innerHTML = parts.map(function(p, i) {
+            return i < parts.length - 1 ? p + '<br>' : p;
+          }).join('') + '<span>.</span>';
+        }
+      }
+      if (s['hero-desc']) setText('.hero p', s['hero-desc']);
+      if (s['hero-cta1']) setText('.hero-ctas .btn-primary', s['hero-cta1']);
+      if (s['hero-cta1-href']) setAttr('.hero-ctas .btn-primary', 'href', s['hero-cta1-href']);
+      if (s['hero-cta2']) setText('.hero-ctas .btn-ghost', s['hero-cta2']);
+      if (s['hero-cta2-href']) setAttr('.hero-ctas .btn-ghost', 'href', s['hero-cta2-href']);
+      if (s['hero-scroll']) {
+        const sc = document.querySelector('.scroll-cue');
+        if (sc) {
+          const dot = sc.querySelector('.dot');
+          sc.textContent = s['hero-scroll'];
+          if (dot) sc.appendChild(dot);
+        }
+      }
+
+      // Intro
+      if (s['intro-eyebrow']) setText('.intro .eyebrow', s['intro-eyebrow']);
+      if (s['intro-h2']) setText('.intro h2', s['intro-h2']);
+      if (s['intro-body']) setText('.intro-text p', s['intro-body']);
+      const chips = document.querySelectorAll('.icon-strip .chip');
+      if (chips[0] && s['intro-chip1']) chips[0].innerHTML = '<span class="dot2"></span>' + s['intro-chip1'];
+      if (chips[1] && s['intro-chip2']) chips[1].innerHTML = '<span class="dot2"></span>' + s['intro-chip2'];
+      if (chips[2] && s['intro-chip3']) chips[2].innerHTML = '<span class="dot2"></span>' + s['intro-chip3'];
+      if (s['intro-img-caption']) {
+        const cap = document.querySelector('.intro-visual .chip');
+        if (cap) cap.innerHTML = '<span class="dot2" style="background:var(--rose);"></span>' + s['intro-img-caption'];
+      }
+
+      // Tracks section header
+      if (s['tracks-eyebrow']) setText('#tracks .section-head .eyebrow', s['tracks-eyebrow']);
+      if (s['tracks-h2']) setText('#tracks .section-head h2', s['tracks-h2']);
+      if (s['tracks-desc']) setText('#tracks .section-head p', s['tracks-desc']);
+
+      // Track cards
+      if (Array.isArray(s['tracks'])) {
+        const cards = document.querySelectorAll('.flip-card');
+        s['tracks'].forEach(function(t, i) {
+          if (!cards[i]) return;
+          const h3 = cards[i].querySelector('.flip-front h3');
+          const eye = cards[i].querySelector('.flip-back .eyebrow');
+          const desc = cards[i].querySelector('.flip-back p');
+          if (h3 && t.front) h3.textContent = t.front;
+          if (eye && t.eyebrow) eye.textContent = t.eyebrow;
+          if (desc && t.back) desc.textContent = t.back;
+        });
+      }
+
+      // Gallery section header
+      if (s['gallery-eyebrow']) setText('#gallery .section-head .eyebrow', s['gallery-eyebrow']);
+      if (s['gallery-h2']) setText('#gallery .section-head h2', s['gallery-h2']);
+      if (s['gallery-desc']) setText('#gallery .section-head p', s['gallery-desc']);
+
+      // Gallery tags
+      if (Array.isArray(s['gallery_tags'])) {
+        const tags = document.querySelectorAll('.gallery-grid .g-item .tag');
+        s['gallery_tags'].forEach(function(t, i) { if (tags[i] && t) tags[i].textContent = t; });
+      }
+
+      // Stats
+      if (Array.isArray(s['stats'])) {
+        const nums = document.querySelectorAll('.stat .num');
+        const lbls = document.querySelectorAll('.stat .lbl');
+        s['stats'].forEach(function(st, i) {
+          if (nums[i] && st.target) {
+            nums[i].dataset.target = st.target;
+            nums[i].dataset.suffix = st.suffix || '+';
+            nums[i].textContent = st.target + (st.suffix || '+');
+          }
+          if (lbls[i] && st.label) lbls[i].textContent = st.label;
+        });
+      }
+
+      // Footer / Contact
+      if (s['footer-brand']) setText('.footer-logo', s['footer-brand']);
+      if (s['footer-slogan']) {
+        const sloganEl = document.querySelector('.footer-grid > div:first-child > div:last-child');
+        if (sloganEl) sloganEl.textContent = s['footer-slogan'];
+      }
+      if (s['footer-phone'] || s['footer-email']) {
+        const col2 = document.querySelector('.footer-grid > div:nth-child(2)');
+        if (col2) col2.innerHTML = (s['footer-phone']||'') + '<br>' + (s['footer-email']||'');
+      }
+      if (s['footer-addr1'] || s['footer-addr2']) {
+        const col3 = document.querySelector('.footer-grid > div:nth-child(3)');
+        if (col3) col3.innerHTML = (s['footer-addr1']||'') + '<br>' + (s['footer-addr2']||'');
+      }
+
+      // CTA block
+      if (s['cta-eyebrow']) setText('.footer-cta .eyebrow', s['cta-eyebrow']);
+      if (s['cta-h2']) setText('.footer-cta h2', s['cta-h2']);
+      if (s['cta-desc']) setText('.footer-cta p', s['cta-desc']);
+      if (s['cta-btn']) setText('.footer-cta .btn-primary', s['cta-btn']);
+      if (s['cta-href']) setAttr('.footer-cta .btn-primary', 'href', s['cta-href']);
+    }
+
+    // 1. Check local cache
+    try {
+      var cached = JSON.parse(localStorage.getItem('kh_site_content'));
+      if (cached) applyContent(cached);
+    } catch(e){}
+
+    // 2. Fetch latest content from backend API (shared between port 8080 and 8081)
+    fetch('/api/site-content')
+      .then(function(r) { return r.json(); })
+      .then(function(res) {
+        if (res.status === 'success' && res.data && Object.keys(res.data).length > 0) {
+          applyContent(res.data);
+          try { localStorage.setItem('kh_site_content', JSON.stringify(res.data)); } catch(e){}
+        }
+      })
+      .catch(function(err) {
+        console.warn('[Site Content] Fetch error:', err);
+      });
+  })();
+</script>
+
+<script>
+  /* ====== NEWS BOARD ====== */
+  (function(){
+    const CAT_ICONS = {
+      'ประกาศสำคัญ':'📢', 'ความสำเร็จ':'🏆', 'กิจกรรม':'🎉',
+      'การศึกษา':'📚', 'อบรม':'🌿', 'ประกาศ':'📋', 'ทั่วไป':'📌'
+    };
+
+    function formatDate(str){
+      if(!str) return '';
+      const d = new Date(str);
+      return d.toLocaleDateString('th-TH',{day:'numeric',month:'long',year:'numeric'});
+    }
+
+    function buildCard(item){
+      const icon = CAT_ICONS[item.category] || '📌';
+      const pinned = item.pin === 1 || item.pin === true;
+      return `
+        <article class="news-card${pinned?' pinned':''}" role="article">
+          ${pinned?'<span class="news-pin">📌 ปักหมุด</span>':''}
+          <div class="news-cat">${icon} ${item.category||'ทั่วไป'}</div>
+          <h3 class="news-title">${item.title}</h3>
+          ${item.body?`<p class="news-body">${item.body}</p>`:''}
+          <div class="news-date">🕐 ${formatDate(item.created_at)}</div>
+        </article>`;
+    }
+
+    async function loadNews(){
+      const grid = document.getElementById('news-grid');
+      try{
+        const res = await fetch('/api/news');
+        const json = await res.json();
+        if(json.status==='success' && json.data.length){
+          grid.innerHTML = json.data.map(buildCard).join('');
+        } else {
+          grid.innerHTML = '<div class="news-empty">ยังไม่มีข่าวสารในขณะนี้</div>';
+        }
+      } catch(e){
+        grid.innerHTML = '<div class="news-empty">⚠️ ไม่สามารถโหลดข่าวสารได้ในขณะนี้</div>';
+      }
+    }
+    loadNews();
+  })();
+</script>
+
+<script>
+  // 3D parallax on hero scene following pointer / device tilt
+  const scene = document.getElementById('scene');
+  const objs = document.querySelectorAll('.float-obj');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (scene && !reduceMotion) {
+    scene.addEventListener('mousemove', (e) => {
+      const rect = scene.getBoundingClientRect();
+      const px = (e.clientX - rect.left) / rect.width - 0.5;
+      const py = (e.clientY - rect.top) / rect.height - 0.5;
+      objs.forEach(obj => {
+        const depth = parseFloat(obj.dataset.depth) || 30;
+        const rx = (py * -depth * 0.4).toFixed(2);
+        const ry = (px * depth * 0.4).toFixed(2);
+        const tx = (px * depth * 0.5).toFixed(2);
+        const ty = (py * depth * 0.5).toFixed(2);
+        obj.style.transform = `translate3d(${tx}px, ${ty}px, 0) rotateX(${rx}deg) rotateY(${ry}deg)`;
+      });
+    });
+    scene.addEventListener('mouseleave', () => {
+      objs.forEach(obj => { obj.style.transform = 'translate3d(0,0,0) rotateX(0) rotateY(0)'; });
+    });
+
+    window.addEventListener('deviceorientation', (e) => {
+      if (e.beta == null || e.gamma == null) return;
+      const px = Math.max(-1, Math.min(1, e.gamma / 30));
+      const py = Math.max(-1, Math.min(1, (e.beta - 45) / 30));
+      objs.forEach(obj => {
+        const depth = parseFloat(obj.dataset.depth) || 30;
+        const rx = (py * -depth * 0.3).toFixed(2);
+        const ry = (px * depth * 0.3).toFixed(2);
+        obj.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
+      });
+    });
+  }
+
+  // count-up stats on scroll into view
+  const statNums = document.querySelectorAll('.stat .num');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const el = entry.target;
+        const target = parseInt(el.dataset.target, 10);
+        let cur = 0;
+        const step = Math.max(1, Math.round(target / 60));
+        const tick = () => {
+          cur += step;
+          if (cur >= target) { el.textContent = target + (target===95?'%':'+'); return; }
+          el.textContent = cur;
+          requestAnimationFrame(tick);
+        };
+        tick();
+        io.unobserve(el);
+      }
+    });
+  }, { threshold: 0.4 });
+  statNums.forEach(el => io.observe(el));
+
+  // ====== THREE.JS HERO 3D BACKGROUND ======
+  (function(){
+    if(typeof THREE==='undefined') return;
+    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const canvas = document.getElementById('hero-3d');
+    const hero   = document.querySelector('.hero');
+    if(!canvas || !hero) return;
+
+    const renderer = new THREE.WebGLRenderer({canvas, alpha:true, antialias:true});
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    const scene3  = new THREE.Scene();
+    const camera3 = new THREE.PerspectiveCamera(55, 1, 0.1, 100);
+    camera3.position.z = 9;
+
+    function resize3(){
+      const W = hero.clientWidth, H = hero.clientHeight;
+      renderer.setSize(W, H, false);
+      camera3.aspect = W / H;
+      camera3.updateProjectionMatrix();
+    }
+    resize3();
+    window.addEventListener('resize', resize3);
+
+    // Color palette matching the site
+    const palette = [0x33513F, 0xE2A63B, 0xC1666B, 0x223529, 0x7C9885, 0xD98A8E];
+    const geoPool = [
+      new THREE.IcosahedronGeometry(0.70, 0),
+      new THREE.OctahedronGeometry(0.55, 0),
+      new THREE.TorusKnotGeometry(0.38, 0.12, 50, 7),
+      new THREE.TetrahedronGeometry(0.60, 0),
+      new THREE.IcosahedronGeometry(0.45, 1),
+      new THREE.TorusGeometry(0.50, 0.16, 8, 6),
+    ];
+
+    const meshes3 = [];
+    for(let i = 0; i < 16; i++){
+      const mat = new THREE.MeshBasicMaterial({
+        color: palette[i % palette.length],
+        wireframe: true,
+        transparent: true,
+        opacity: 0.10 + Math.random() * 0.18
+      });
+      const mesh = new THREE.Mesh(geoPool[i % geoPool.length], mat);
+      mesh.position.set(
+        (Math.random() - 0.5) * 20,
+        (Math.random() - 0.5) * 11,
+        (Math.random() - 0.5) * 5 - 1
+      );
+      mesh.rotation.set(
+        Math.random() * Math.PI,
+        Math.random() * Math.PI,
+        0
+      );
+      mesh.userData = {
+        rx: (Math.random() - 0.5) * 0.009,
+        ry: (Math.random() - 0.5) * 0.013,
+        fA: 0.12 + Math.random() * 0.22,
+        fS: 0.35 + Math.random() * 0.55,
+        fP: Math.random() * Math.PI * 2,
+        iy: 0
+      };
+      mesh.userData.iy = mesh.position.y;
+      scene3.add(mesh);
+      meshes3.push(mesh);
+    }
+
+    let mx = 0, my = 0, tx3 = 0, ty3 = 0;
+    hero.addEventListener('mousemove', e => {
+      const r = hero.getBoundingClientRect();
+      mx = ((e.clientX - r.left) / r.width  - 0.5) * 2;
+      my = ((e.clientY - r.top)  / r.height - 0.5) * 2;
+    });
+
+    let t3 = 0;
+    (function loop(){
+      requestAnimationFrame(loop);
+      t3 += 0.012;
+      tx3 += (mx * 0.6 - tx3) * 0.04;
+      ty3 += (-my * 0.4 - ty3) * 0.04;
+      camera3.position.x = tx3;
+      camera3.position.y = ty3;
+      camera3.lookAt(0, 0, 0);
+      meshes3.forEach(m => {
+        m.rotation.x += m.userData.rx;
+        m.rotation.y += m.userData.ry;
+        m.position.y = m.userData.iy + Math.sin(t3 * m.userData.fS + m.userData.fP) * m.userData.fA;
+      });
+      renderer.render(scene3, camera3);
+    })();
+  })();
+
+  // ====== CARD 3D TILT (gallery + stats) ======
+  (function(){
+    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    document.querySelectorAll('.g-item, .stat').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const r  = card.getBoundingClientRect();
+        const rx = ((e.clientY - r.top)  / r.height - 0.5) * -16;
+        const ry = ((e.clientX - r.left) / r.width  - 0.5) * 16;
+        card.style.transition = 'transform 0.1s ease-out, box-shadow 0.1s ease-out';
+        card.style.transform  = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg) translateZ(14px)`;
+        card.style.boxShadow  = `${-ry * 0.4}px ${rx * 0.4}px 30px -6px rgba(46,33,24,.3)`;
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transition = 'transform 0.6s cubic-bezier(.2,.8,.2,1), box-shadow 0.6s ease';
+        card.style.transform  = '';
+        card.style.boxShadow  = '';
+      });
+    });
+  })();
+</script>
+</body>
+</html>
